@@ -1,0 +1,416 @@
+import React, { useState } from 'react';
+import {
+    View,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    ScrollView,
+    Alert,
+} from 'react-native';
+import { Button, Divider, Switch } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+
+export const TwoStepVerificationScreen = () => {
+    const navigation = useNavigation<any>();
+    const [isEnabled, setIsEnabled] = useState(false);
+    const [pin, setPin] = useState(['', '', '', '', '', '']);
+    const [confirmPin, setConfirmPin] = useState(['', '', '', '', '', '']);
+    const [email, setEmail] = useState('');
+    const [step, setStep] = useState<'setup' | 'create' | 'confirm' | 'email'>('setup');
+
+    const handlePinInput = (value: string, index: number, isConfirm: boolean = false) => {
+        if (value.length > 1) return;
+        
+        const newPin = isConfirm ? [...confirmPin] : [...pin];
+        newPin[index] = value;
+        
+        if (isConfirm) {
+            setConfirmPin(newPin);
+        } else {
+            setPin(newPin);
+        }
+    };
+
+    const handleEnableVerification = () => {
+        if (!isEnabled) {
+            setStep('create');
+        } else {
+            Alert.alert(
+                'Disable two-step verification',
+                'Are you sure you want to turn off two-step verification?',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                        text: 'Disable',
+                        style: 'destructive',
+                        onPress: () => {
+                            setIsEnabled(false);
+                            setPin(['', '', '', '', '', '']);
+                            setConfirmPin(['', '', '', '', '', '']);
+                            setEmail('');
+                            setStep('setup');
+                        },
+                    },
+                ]
+            );
+        }
+    };
+
+    const handleCreatePin = () => {
+        if (pin.some(digit => digit === '')) {
+            Alert.alert('Error', 'Please enter all 6 digits');
+            return;
+        }
+        setStep('confirm');
+    };
+
+    const handleConfirmPin = () => {
+        if (confirmPin.some(digit => digit === '')) {
+            Alert.alert('Error', 'Please enter all 6 digits');
+            return;
+        }
+        
+        if (pin.join('') !== confirmPin.join('')) {
+            Alert.alert('Error', 'PINs do not match. Please try again.');
+            setConfirmPin(['', '', '', '', '', '']);
+            return;
+        }
+        
+        setStep('email');
+    };
+
+    const handleComplete = () => {
+        if (!email || !email.includes('@')) {
+            Alert.alert('Error', 'Please enter a valid email address');
+            return;
+        }
+        
+        setIsEnabled(true);
+        setStep('setup');
+        Alert.alert('Success', 'Two-step verification has been enabled');
+    };
+
+    const renderSetupView = () => (
+        <ScrollView style={styles.content}>
+            <View style={styles.infoCard}>
+                <Text style={styles.infoIcon}>🔐</Text>
+                <Text style={styles.infoTitle}>Two-Step Verification</Text>
+                <Text style={styles.infoText}>
+                    For added security, enable two-step verification, which will require a PIN when
+                    registering your phone number with WhatsApp again.
+                </Text>
+            </View>
+
+            <View style={styles.statusCard}>
+                <View style={styles.statusHeader}>
+                    <Text style={styles.statusTitle}>
+                        {isEnabled ? 'Enabled' : 'Disabled'}
+                    </Text>
+                    <Switch
+                        value={isEnabled}
+                        onValueChange={handleEnableVerification}
+                        color="#25D366"
+                    />
+                </View>
+                {isEnabled && (
+                    <>
+                        <Divider style={styles.divider} />
+                        <Text style={styles.statusText}>
+                            Your account is protected with two-step verification
+                        </Text>
+                        <Text style={styles.statusEmail}>Email: {email || 'Not set'}</Text>
+                    </>
+                )}
+            </View>
+
+            {isEnabled && (
+                <>
+                    <View style={styles.section}>
+                        <TouchableOpacity
+                            style={styles.optionItem}
+                            onPress={() => setStep('create')}
+                        >
+                            <Text style={styles.optionTitle}>Change PIN</Text>
+                            <Text style={styles.optionSubtitle}>Update your verification PIN</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.optionItem}
+                            onPress={() => setStep('email')}
+                        >
+                            <Text style={styles.optionTitle}>Change Email</Text>
+                            <Text style={styles.optionSubtitle}>Update your recovery email</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.optionItem}
+                            onPress={() => Alert.alert('Info', 'A reset email will be sent to your registered email address')}
+                        >
+                            <Text style={styles.optionTitle}>Turn Off</Text>
+                            <Text style={styles.optionSubtitle}>Disable two-step verification</Text>
+                        </TouchableOpacity>
+                    </View>
+                </>
+            )}
+
+            <View style={styles.warningCard}>
+                <Text style={styles.warningIcon}>⚠️</Text>
+                <Text style={styles.warningText}>
+                    If you forget your PIN, you won't be able to verify your phone number for 7 days
+                </Text>
+            </View>
+        </ScrollView>
+    );
+
+    const renderPinInput = (pinArray: string[], isConfirm: boolean = false) => (
+        <View style={styles.pinContainer}>
+            {pinArray.map((digit, index) => (
+                <TextInput
+                    key={index}
+                    style={styles.pinInput}
+                    value={digit}
+                    onChangeText={(value) => handlePinInput(value, index, isConfirm)}
+                    keyboardType="numeric"
+                    maxLength={1}
+                    secureTextEntry
+                />
+            ))}
+        </View>
+    );
+
+    const renderCreateView = () => (
+        <View style={styles.content}>
+            <View style={styles.stepCard}>
+                <Text style={styles.stepTitle}>Create PIN</Text>
+                <Text style={styles.stepSubtitle}>
+                    Enter a 6-digit PIN that you'll need to enter when registering your phone number with WhatsApp
+                </Text>
+                {renderPinInput(pin)}
+                <Button
+                    mode="contained"
+                    onPress={handleCreatePin}
+                    style={styles.button}
+                    disabled={pin.some(d => d === '')}
+                >
+                    NEXT
+                </Button>
+            </View>
+        </View>
+    );
+
+    const renderConfirmView = () => (
+        <View style={styles.content}>
+            <View style={styles.stepCard}>
+                <Text style={styles.stepTitle}>Confirm PIN</Text>
+                <Text style={styles.stepSubtitle}>
+                    Re-enter your PIN to confirm
+                </Text>
+                {renderPinInput(confirmPin, true)}
+                <Button
+                    mode="contained"
+                    onPress={handleConfirmPin}
+                    style={styles.button}
+                    disabled={confirmPin.some(d => d === '')}
+                >
+                    CONFIRM
+                </Button>
+            </View>
+        </View>
+    );
+
+    const renderEmailView = () => (
+        <View style={styles.content}>
+            <View style={styles.stepCard}>
+                <Text style={styles.stepTitle}>Add Email</Text>
+                <Text style={styles.stepSubtitle}>
+                    Add an email address to help you reset your PIN if you forget it
+                </Text>
+                <TextInput
+                    style={styles.emailInput}
+                    placeholder="example@email.com"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                />
+                <Button
+                    mode="contained"
+                    onPress={handleComplete}
+                    style={styles.button}
+                >
+                    COMPLETE
+                </Button>
+                <Button
+                    mode="text"
+                    onPress={() => {
+                        setIsEnabled(true);
+                        setStep('setup');
+                    }}
+                    style={styles.skipButton}
+                >
+                    Skip
+                </Button>
+            </View>
+        </View>
+    );
+
+    return (
+        <View style={styles.container}>
+            {step === 'setup' && renderSetupView()}
+            {step === 'create' && renderCreateView()}
+            {step === 'confirm' && renderConfirmView()}
+            {step === 'email' && renderEmailView()}
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    content: {
+        flex: 1,
+        padding: 16,
+    },
+    infoCard: {
+        padding: 24,
+        backgroundColor: '#E7F5EC',
+        borderRadius: 12,
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    infoIcon: {
+        fontSize: 48,
+        marginBottom: 12,
+    },
+    infoTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#000',
+        marginBottom: 8,
+    },
+    infoText: {
+        fontSize: 14,
+        color: '#667781',
+        textAlign: 'center',
+        lineHeight: 20,
+    },
+    statusCard: {
+        padding: 16,
+        backgroundColor: '#F7F8FA',
+        borderRadius: 12,
+        marginBottom: 16,
+    },
+    statusHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    statusTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#000',
+    },
+    statusText: {
+        fontSize: 14,
+        color: '#667781',
+        marginTop: 12,
+    },
+    statusEmail: {
+        fontSize: 13,
+        color: '#25D366',
+        marginTop: 4,
+    },
+    section: {
+        marginBottom: 16,
+    },
+    optionItem: {
+        padding: 16,
+        backgroundColor: '#F7F8FA',
+        borderRadius: 12,
+        marginBottom: 8,
+    },
+    optionTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#000',
+        marginBottom: 4,
+    },
+    optionSubtitle: {
+        fontSize: 13,
+        color: '#667781',
+    },
+    warningCard: {
+        flexDirection: 'row',
+        padding: 16,
+        backgroundColor: '#FFF9E6',
+        borderRadius: 12,
+        borderLeftWidth: 4,
+        borderLeftColor: '#FFA500',
+    },
+    warningIcon: {
+        fontSize: 20,
+        marginRight: 12,
+    },
+    warningText: {
+        flex: 1,
+        fontSize: 13,
+        color: '#667781',
+        lineHeight: 18,
+    },
+    stepCard: {
+        padding: 24,
+        backgroundColor: '#F7F8FA',
+        borderRadius: 12,
+    },
+    stepTitle: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#000',
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    stepSubtitle: {
+        fontSize: 14,
+        color: '#667781',
+        textAlign: 'center',
+        lineHeight: 20,
+        marginBottom: 32,
+    },
+    pinContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 32,
+    },
+    pinInput: {
+        width: 48,
+        height: 56,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        borderWidth: 2,
+        borderColor: '#25D366',
+        textAlign: 'center',
+        fontSize: 24,
+        fontWeight: '700',
+    },
+    emailInput: {
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#E8E8E8',
+        padding: 12,
+        fontSize: 16,
+        marginBottom: 24,
+    },
+    button: {
+        backgroundColor: '#25D366',
+    },
+    skipButton: {
+        marginTop: 8,
+    },
+    divider: {
+        marginVertical: 12,
+    },
+});

@@ -1,0 +1,524 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Image, Platform } from 'react-native';
+import { List, Avatar, IconButton, Switch, Divider, Badge, Card } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { RootState, useAppDispatch } from '../../store';
+import { logout } from '../../store/slices/authSlice';
+
+export const SettingsScreen = () => {
+    const navigation = useNavigation<any>();
+    const dispatch = useAppDispatch();
+    const { user } = useSelector((state: RootState) => state.auth);
+    const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+    const SettingCard = ({ icon, title, description, onPress, rightElement, badge }: any) => (
+        <TouchableOpacity
+            style={styles.settingCard}
+            onPress={onPress}
+            activeOpacity={0.7}
+        >
+            <View style={styles.settingCardLeft}>
+                <View style={[styles.iconContainer, { backgroundColor: `${icon.color}15` }]}>
+                    <IconButton icon={icon.name} size={24} iconColor={icon.color} style={styles.iconButton} />
+                </View>
+                <View style={styles.settingCardInfo}>
+                    <View style={styles.titleRow}>
+                        <Text style={styles.settingTitle}>{title}</Text>
+                        {badge && (
+                            <Badge style={styles.badge} size={18}>{badge}</Badge>
+                        )}
+                    </View>
+                    {description && (
+                        <Text style={styles.settingDescription}>{description}</Text>
+                    )}
+                </View>
+            </View>
+            {rightElement || <IconButton icon="chevron-right" size={20} iconColor="#8696A0" style={styles.chevron} />}
+        </TouchableOpacity>
+    );
+
+    return (
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            {/* Modern Profile Header */}
+            <View style={styles.headerGradient}>
+                <TouchableOpacity
+                    style={styles.profileCard}
+                    onPress={() => navigation.navigate('ProfileSettings')}
+                    activeOpacity={0.9}
+                >
+                    <View style={styles.profileCardContent}>
+                        <Avatar.Text
+                            size={70}
+                            label={user?.name?.substring(0, 2).toUpperCase() || 'U'}
+                            style={styles.avatar}
+                            labelStyle={styles.avatarLabel}
+                        />
+                        <View style={styles.profileTextContainer}>
+                            <Text style={styles.profileName}>{user?.name || 'User'}</Text>
+                            <Text style={styles.profilePhone}>{user?.phone || '+1 234 567 8900'}</Text>
+                            <View style={styles.statusBadge}>
+                                <View style={styles.statusDot} />
+                                <Text style={styles.statusText}>Available</Text>
+                            </View>
+                        </View>
+                    </View>
+                    <View style={styles.profileActions}>
+                        <TouchableOpacity style={styles.qrButton}>
+                            <IconButton icon="qrcode" size={20} iconColor="#25D366" />
+                        </TouchableOpacity>
+                        <IconButton icon="chevron-right" size={24} iconColor="#25D366" />
+                    </View>
+                </TouchableOpacity>
+            </View>
+
+            {/* Quick Actions */}
+            <View style={styles.quickActionsContainer}>
+                <Text style={styles.sectionTitle}>Quick Actions</Text>
+                <View style={styles.quickActionsGrid}>
+                    <TouchableOpacity 
+                        style={styles.quickActionButton}
+                        onPress={() => navigation.navigate('PrivacySettings')}
+                    >
+                        <View style={[styles.quickActionIcon, { backgroundColor: '#E3F2FD' }]}>
+                            <IconButton icon="lock" iconColor="#2196F3" size={24} />
+                        </View>
+                        <Text style={styles.quickActionText}>Privacy</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                        style={styles.quickActionButton}
+                        onPress={() => navigation.navigate('SecuritySettings')}
+                    >
+                        <View style={[styles.quickActionIcon, { backgroundColor: '#FFF3E0' }]}>
+                            <IconButton icon="shield-check" iconColor="#FF9800" size={24} />
+                        </View>
+                        <Text style={styles.quickActionText}>Security</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                        style={styles.quickActionButton}
+                        onPress={() => navigation.navigate('StorageSettings')}
+                    >
+                        <View style={[styles.quickActionIcon, { backgroundColor: '#F3E5F5' }]}>
+                            <IconButton icon="database" iconColor="#9C27B0" size={24} />
+                        </View>
+                        <Text style={styles.quickActionText}>Storage</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                        style={styles.quickActionButton}
+                        onPress={() => navigation.navigate('NotificationSettings')}
+                    >
+                        <View style={[styles.quickActionIcon, { backgroundColor: '#E8F5E9' }]}>
+                            <IconButton icon="bell" iconColor="#4CAF50" size={24} />
+                        </View>
+                        <Text style={styles.quickActionText}>Alerts</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            {/* Account Settings */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Account Settings</Text>
+                <View style={styles.cardContainer}>
+                    <SettingCard
+                        icon={{ name: 'lock-outline', color: '#2196F3' }}
+                        title="Privacy"
+                        description="Control your privacy settings"
+                        onPress={() => navigation.navigate('PrivacySettings')}
+                    />
+                    <SettingCard
+                        icon={{ name: 'shield-check-outline', color: '#FF9800' }}
+                        title="Security"
+                        description="Two-step verification, biometrics"
+                        onPress={() => navigation.navigate('SecuritySettings')}
+                    />
+                    <SettingCard
+                        icon={{ name: 'account-circle-outline', color: '#E91E63' }}
+                        title="Account"
+                        description="Manage your account settings"
+                        onPress={() => navigation.navigate('AccountSettings')}
+                    />
+                </View>
+            </View>
+
+            {/* Chat Settings */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Personalization</Text>
+                <View style={styles.cardContainer}>
+                    <SettingCard
+                        icon={{ name: 'palette-outline', color: '#9C27B0' }}
+                        title="Theme"
+                        description="Customize app appearance"
+                        onPress={() => navigation.navigate('ChatSettings')}
+                    />
+                    <SettingCard
+                        icon={{ name: 'image-outline', color: '#00BCD4' }}
+                        title="Chat Wallpaper"
+                        description="Change your chat background"
+                        onPress={() => navigation.navigate('ChatBackground')}
+                    />
+                    <SettingCard
+                        icon={{ name: 'format-text', color: '#FF5722' }}
+                        title="Font Size"
+                        description="Adjust text size"
+                        onPress={() => {}}
+                    />
+                </View>
+            </View>
+
+            {/* Data & Storage */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Data & Storage</Text>
+                <View style={styles.cardContainer}>
+                    <SettingCard
+                        icon={{ name: 'database-outline', color: '#607D8B' }}
+                        title="Storage Usage"
+                        description="Manage storage and data"
+                        onPress={() => navigation.navigate('StorageSettings')}
+                    />
+                    <SettingCard
+                        icon={{ name: 'download-outline', color: '#4CAF50' }}
+                        title="Media Auto-Download"
+                        description="Wi-Fi, Cellular, Roaming"
+                        onPress={() => navigation.navigate('DataUsage')}
+                    />
+                    <SettingCard
+                        icon={{ name: 'backup-restore', color: '#3F51B5' }}
+                        title="Chat Backup"
+                        description="Back up to cloud storage"
+                        onPress={() => {}}
+                        badge="New"
+                    />
+                </View>
+            </View>
+
+            {/* Notifications */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Notifications</Text>
+                <View style={styles.cardContainer}>
+                    <SettingCard
+                        icon={{ name: 'bell-outline', color: '#FF9800' }}
+                        title="Notifications"
+                        description={notificationsEnabled ? 'All notifications enabled' : 'Notifications disabled'}
+                        rightElement={
+                            <Switch
+                                value={notificationsEnabled}
+                                onValueChange={setNotificationsEnabled}
+                                color="#25D366"
+                                style={styles.switch}
+                            />
+                        }
+                    />
+                    <SettingCard
+                        icon={{ name: 'message-text-outline', color: '#2196F3' }}
+                        title="Message Notifications"
+                        description="Customize message alerts"
+                        onPress={() => navigation.navigate('NotificationSettings')}
+                    />
+                    <SettingCard
+                        icon={{ name: 'account-group-outline', color: '#9C27B0' }}
+                        title="Group Notifications"
+                        description="Manage group chat alerts"
+                        onPress={() => navigation.navigate('NotificationSettings')}
+                    />
+                </View>
+            </View>
+
+            {/* Advanced */}
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>More Options</Text>
+                <View style={styles.cardContainer}>
+                    <SettingCard
+                        icon={{ name: 'briefcase-outline', color: '#FF6F00' }}
+                        title="Business Tools"
+                        description="Manage business features"
+                        onPress={() => navigation.navigate('BusinessTools')}
+                    />
+                    <SettingCard
+                        icon={{ name: 'help-circle-outline', color: '#00BCD4' }}
+                        title="Help Center"
+                        description="FAQs and support"
+                        onPress={() => navigation.navigate('HelpSupport')}
+                    />
+                    <SettingCard
+                        icon={{ name: 'information-outline', color: '#607D8B' }}
+                        title="About"
+                        description="Version 2.24.1"
+                        onPress={() => navigation.navigate('About')}
+                    />
+                </View>
+            </View>
+
+            {/* Logout Button */}
+            <TouchableOpacity
+                style={styles.logoutButton}
+                onPress={() => dispatch(logout())}
+                activeOpacity={0.8}
+            >
+                <IconButton icon="logout" iconColor="#fff" size={20} />
+                <Text style={styles.logoutText}>Sign Out</Text>
+            </TouchableOpacity>
+
+            {/* Footer */}
+            <View style={styles.footer}>
+                <Text style={styles.footerText}>WhatsApp from</Text>
+                <Text style={styles.footerBrand}>META</Text>
+                <Text style={styles.footerVersion}>Version 2.24.1</Text>
+            </View>
+
+            <View style={styles.bottomSpace} />
+        </ScrollView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#F5F7FA',
+    },
+    // Modern Profile Header
+    headerGradient: {
+        backgroundColor: '#fff',
+        paddingTop: 20,
+        paddingBottom: 24,
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+            },
+            android: {
+                elevation: 4,
+            },
+        }),
+    },
+    profileCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+    },
+    profileCardContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    avatar: {
+        backgroundColor: '#25D366',
+    },
+    avatarLabel: {
+        fontSize: 26,
+        fontWeight: '700',
+    },
+    profileTextContainer: {
+        marginLeft: 16,
+        flex: 1,
+    },
+    profileName: {
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#000',
+        marginBottom: 4,
+    },
+    profilePhone: {
+        fontSize: 14,
+        color: '#667781',
+        marginBottom: 6,
+    },
+    statusBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    statusDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#4CAF50',
+        marginRight: 6,
+    },
+    statusText: {
+        fontSize: 12,
+        color: '#4CAF50',
+        fontWeight: '600',
+    },
+    profileActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    qrButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#E7F5EC',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 4,
+    },
+    // Quick Actions Grid
+    quickActionsContainer: {
+        padding: 20,
+    },
+    quickActionsGrid: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 12,
+    },
+    quickActionButton: {
+        alignItems: 'center',
+        flex: 1,
+    },
+    quickActionIcon: {
+        width: 56,
+        height: 56,
+        borderRadius: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    quickActionText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#000',
+    },
+    // Section Styles
+    section: {
+        paddingHorizontal: 20,
+        marginBottom: 24,
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#000',
+        marginBottom: 12,
+    },
+    cardContainer: {
+        backgroundColor: '#fff',
+        borderRadius: 16,
+        overflow: 'hidden',
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.08,
+                shadowRadius: 4,
+            },
+            android: {
+                elevation: 2,
+            },
+        }),
+    },
+    // Setting Card
+    settingCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F2F5',
+    },
+    settingCardLeft: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    iconContainer: {
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    iconButton: {
+        margin: 0,
+    },
+    settingCardInfo: {
+        marginLeft: 14,
+        flex: 1,
+    },
+    titleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    settingTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#000',
+        marginRight: 8,
+    },
+    badge: {
+        backgroundColor: '#FF5722',
+        color: '#fff',
+    },
+    settingDescription: {
+        fontSize: 13,
+        color: '#667781',
+        marginTop: 2,
+    },
+    chevron: {
+        margin: 0,
+    },
+    switch: {
+        marginRight: 8,
+    },
+    // Logout Button
+    logoutButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 20,
+        marginTop: 12,
+        marginBottom: 24,
+        paddingVertical: 16,
+        backgroundColor: '#F44336',
+        borderRadius: 16,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#F44336',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+            },
+            android: {
+                elevation: 4,
+            },
+        }),
+    },
+    logoutText: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#fff',
+        marginLeft: 8,
+    },
+    // Footer
+    footer: {
+        alignItems: 'center',
+        paddingVertical: 24,
+        paddingBottom: 32,
+    },
+    footerText: {
+        fontSize: 12,
+        color: '#8696A0',
+        marginBottom: 4,
+    },
+    footerBrand: {
+        fontSize: 15,
+        fontWeight: '800',
+        color: '#25D366',
+        letterSpacing: 2,
+        marginBottom: 8,
+    },
+    footerVersion: {
+        fontSize: 11,
+        color: '#B0B0B0',
+    },
+    bottomSpace: {
+        height: 24,
+    },
+});

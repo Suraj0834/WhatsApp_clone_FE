@@ -1,0 +1,264 @@
+import React, { useState } from 'react';
+import {
+    View,
+    StyleSheet,
+    Text,
+    ScrollView,
+    TouchableOpacity,
+} from 'react-native';
+import { List, Divider, Button, Switch } from 'react-native-paper';
+
+export const NotificationSettingsScreen = () => {
+    const [conversationTones, setConversationTones] = useState(true);
+    const [showNotifications, setShowNotifications] = useState(true);
+    const [showPreview, setShowPreview] = useState(true);
+    const [callNotifications, setCallNotifications] = useState(true);
+    const [vibrate, setVibrate] = useState(true);
+    const [notificationLight, setNotificationLight] = useState(true);
+
+    return (
+        <ScrollView style={styles.container}>
+            <View style={styles.section}>
+                <List.Item
+                    title="Conversation tones"
+                    description="Play sound for incoming and outgoing messages"
+                    left={() => <List.Icon icon="music" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={conversationTones}
+                            onValueChange={setConversationTones}
+                            color="#25D366"
+                        />
+                    )}
+                />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>MESSAGES</Text>
+            </View>
+
+            <View style={styles.section}>
+                <List.Item
+                    title="Show notifications"
+                    left={() => <List.Icon icon="bell" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={showNotifications}
+                            onValueChange={setShowNotifications}
+                            color="#25D366"
+                        />
+                    )}
+                />
+
+                <List.Item
+                    title="Notification tone"
+                    description="Default (Tri-tone)"
+                    left={() => <List.Icon icon="volume-high" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                    disabled={!showNotifications}
+                />
+
+                <List.Item
+                    title="Vibrate"
+                    description="Default"
+                    left={() => <List.Icon icon="vibrate" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={vibrate}
+                            onValueChange={setVibrate}
+                            color="#25D366"
+                            disabled={!showNotifications}
+                        />
+                    )}
+                    disabled={!showNotifications}
+                />
+
+                <List.Item
+                    title="Popup notification"
+                    description="Not available"
+                    left={() => <List.Icon icon="message-alert" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                    disabled={!showNotifications}
+                />
+
+                <List.Item
+                    title="Light"
+                    description="White"
+                    left={() => <List.Icon icon="lightbulb" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={notificationLight}
+                            onValueChange={setNotificationLight}
+                            color="#25D366"
+                            disabled={!showNotifications}
+                        />
+                    )}
+                    disabled={!showNotifications}
+                />
+
+                <List.Item
+                    title="Use high priority notifications"
+                    description="Show at the top of the notification screen"
+                    left={() => <List.Icon icon="priority-high" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                    disabled={!showNotifications}
+                />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>GROUPS</Text>
+            </View>
+
+            <View style={styles.section}>
+                <List.Item
+                    title="Show notifications"
+                    left={() => <List.Icon icon="bell" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={showNotifications}
+                            onValueChange={setShowNotifications}
+                            color="#25D366"
+                        />
+                    )}
+                />
+
+                <List.Item
+                    title="Notification tone"
+                    description="Default (Tri-tone)"
+                    left={() => <List.Icon icon="volume-high" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                />
+
+                <List.Item
+                    title="Vibrate"
+                    description="Default"
+                    left={() => <List.Icon icon="vibrate" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>CALLS</Text>
+            </View>
+
+            <View style={styles.section}>
+                <List.Item
+                    title="Call notifications"
+                    left={() => <List.Icon icon="phone" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={callNotifications}
+                            onValueChange={setCallNotifications}
+                            color="#25D366"
+                        />
+                    )}
+                />
+
+                <List.Item
+                    title="Ringtone"
+                    description="Default (Opening)"
+                    left={() => <List.Icon icon="phone-ring" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                    disabled={!callNotifications}
+                />
+
+                <List.Item
+                    title="Vibrate"
+                    left={() => <List.Icon icon="vibrate" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={vibrate}
+                            onValueChange={setVibrate}
+                            color="#25D366"
+                            disabled={!callNotifications}
+                        />
+                    )}
+                    disabled={!callNotifications}
+                />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.section}>
+                <List.Item
+                    title="Show preview"
+                    description="Show sender and message text in notifications"
+                    left={() => <List.Icon icon="eye" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={showPreview}
+                            onValueChange={setShowPreview}
+                            color="#25D366"
+                        />
+                    )}
+                />
+            </View>
+
+            <View style={styles.infoBox}>
+                <Text style={styles.infoText}>
+                    To receive notifications, enable them in your device's system settings
+                </Text>
+                <Button
+                    mode="text"
+                    onPress={() => {}}
+                    labelStyle={styles.infoButton}
+                >
+                    Open System Settings
+                </Button>
+            </View>
+        </ScrollView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    section: {
+        backgroundColor: '#fff',
+    },
+    header: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#F7F8FA',
+    },
+    headerText: {
+        fontSize: 13,
+        color: '#667781',
+        fontWeight: '600',
+    },
+    divider: {
+        height: 8,
+        backgroundColor: '#F7F8FA',
+    },
+    infoBox: {
+        margin: 16,
+        padding: 16,
+        backgroundColor: '#E7F5EC',
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    infoText: {
+        fontSize: 13,
+        color: '#667781',
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+    infoButton: {
+        color: '#25D366',
+        fontSize: 14,
+    },
+});

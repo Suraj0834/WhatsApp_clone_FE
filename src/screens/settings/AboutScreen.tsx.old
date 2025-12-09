@@ -1,0 +1,225 @@
+import React from 'react';
+import {
+    View,
+    StyleSheet,
+    Text,
+    ScrollView,
+    TouchableOpacity,
+    Linking,
+} from 'react-native';
+import { List, Divider } from 'react-native-paper';
+
+export const AboutScreen = () => {
+    const appVersion = '2.23.25.78';
+    const appInfo = {
+        version: appVersion,
+        buildNumber: '12345',
+        releaseDate: 'December 8, 2024',
+    };
+
+    const openURL = (url: string) => {
+        Linking.openURL(url);
+    };
+
+    return (
+        <ScrollView style={styles.container}>
+            <View style={styles.logoSection}>
+                <Text style={styles.logo}>WhatsApp</Text>
+                <Text style={styles.tagline}>Simple. Secure. Reliable messaging.</Text>
+            </View>
+
+            <View style={styles.versionCard}>
+                <Text style={styles.versionLabel}>Version</Text>
+                <Text style={styles.versionNumber}>{appInfo.version}</Text>
+                <Text style={styles.versionDate}>{appInfo.releaseDate}</Text>
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.section}>
+                <List.Item
+                    title="Privacy Policy"
+                    description="Read our privacy policy"
+                    left={() => <List.Icon icon="shield-lock" color="#25D366" />}
+                    right={() => <List.Icon icon="open-in-new" />}
+                    onPress={() => openURL('https://www.whatsapp.com/legal/privacy-policy')}
+                />
+
+                <List.Item
+                    title="Terms of Service"
+                    description="Read our terms of service"
+                    left={() => <List.Icon icon="file-document" color="#25D366" />}
+                    right={() => <List.Icon icon="open-in-new" />}
+                    onPress={() => openURL('https://www.whatsapp.com/legal/terms-of-service')}
+                />
+
+                <List.Item
+                    title="Licenses"
+                    description="Open source licenses"
+                    left={() => <List.Icon icon="license" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.section}>
+                <List.Item
+                    title="Help Center"
+                    description="Get help and support"
+                    left={() => <List.Icon icon="help-circle" color="#25D366" />}
+                    right={() => <List.Icon icon="open-in-new" />}
+                    onPress={() => openURL('https://faq.whatsapp.com')}
+                />
+
+                <List.Item
+                    title="Contact Us"
+                    description="Send us feedback or report issues"
+                    left={() => <List.Icon icon="email" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                />
+
+                <List.Item
+                    title="App Info"
+                    description="View detailed app information"
+                    left={() => <List.Icon icon="information" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.socialSection}>
+                <Text style={styles.socialTitle}>Follow us</Text>
+                <View style={styles.socialButtons}>
+                    <TouchableOpacity
+                        style={styles.socialButton}
+                        onPress={() => openURL('https://twitter.com/whatsapp')}
+                    >
+                        <Text style={styles.socialIcon}>𝕏</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.socialButton}
+                        onPress={() => openURL('https://facebook.com/whatsapp')}
+                    >
+                        <Text style={styles.socialIcon}>f</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.socialButton}
+                        onPress={() => openURL('https://instagram.com/whatsapp')}
+                    >
+                        <Text style={styles.socialIcon}>📷</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            <View style={styles.footer}>
+                <Text style={styles.footerText}>from</Text>
+                <Text style={styles.footerBrand}>META</Text>
+                <Text style={styles.copyright}>
+                    © {new Date().getFullYear()} Meta Platforms, Inc.
+                </Text>
+            </View>
+        </ScrollView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    logoSection: {
+        paddingVertical: 40,
+        alignItems: 'center',
+        backgroundColor: '#F7F8FA',
+    },
+    logo: {
+        fontSize: 32,
+        fontWeight: '700',
+        color: '#25D366',
+        marginBottom: 8,
+    },
+    tagline: {
+        fontSize: 14,
+        color: '#667781',
+    },
+    versionCard: {
+        margin: 16,
+        padding: 20,
+        backgroundColor: '#F7F8FA',
+        borderRadius: 12,
+        alignItems: 'center',
+    },
+    versionLabel: {
+        fontSize: 13,
+        color: '#667781',
+        marginBottom: 8,
+    },
+    versionNumber: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#000',
+        marginBottom: 4,
+    },
+    versionDate: {
+        fontSize: 12,
+        color: '#667781',
+    },
+    divider: {
+        height: 8,
+        backgroundColor: '#F7F8FA',
+    },
+    section: {
+        backgroundColor: '#fff',
+        paddingVertical: 8,
+    },
+    socialSection: {
+        padding: 16,
+        alignItems: 'center',
+    },
+    socialTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#000',
+        marginBottom: 16,
+    },
+    socialButtons: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    socialButton: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#F7F8FA',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 8,
+    },
+    socialIcon: {
+        fontSize: 24,
+    },
+    footer: {
+        paddingVertical: 32,
+        alignItems: 'center',
+    },
+    footerText: {
+        fontSize: 12,
+        color: '#667781',
+        marginBottom: 4,
+    },
+    footerBrand: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#000',
+        marginBottom: 8,
+    },
+    copyright: {
+        fontSize: 11,
+        color: '#667781',
+    },
+});

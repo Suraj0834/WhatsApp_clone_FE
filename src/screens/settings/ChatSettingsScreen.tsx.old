@@ -1,0 +1,148 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import { List, Button, RadioButton, Divider } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+
+export const ChatSettingsScreen = () => {
+    const navigation = useNavigation<any>();
+    const [theme, setTheme] = useState('light');
+    const [fontSize, setFontSize] = useState('medium');
+    const [enterToSend, setEnterToSend] = useState(false);
+    const [mediaVisibility, setMediaVisibility] = useState(true);
+
+    return (
+        <ScrollView style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.headerText}>DISPLAY</Text>
+            </View>
+
+            <List.Item
+                title="Theme"
+                description={theme === 'light' ? 'Light' : theme === 'dark' ? 'Dark' : 'System default'}
+                left={() => <List.Icon icon="palette" color="#25D366" />}
+                onPress={() => navigation.navigate('ThemeSettings')}
+            />
+
+            <List.Item
+                title="Wallpaper"
+                left={() => <List.Icon icon="image" color="#25D366" />}
+                onPress={() => navigation.navigate('WallpaperSettings')}
+            />
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>CHAT SETTINGS</Text>
+            </View>
+
+            <List.Item
+                title="Enter is send"
+                description="Enter key will send your message"
+                left={() => <List.Icon icon="keyboard-return" color="#25D366" />}
+                right={() => (
+                    <RadioButton.Android
+                        value="enter"
+                        status={enterToSend ? 'checked' : 'unchecked'}
+                        onPress={() => setEnterToSend(!enterToSend)}
+                        color="#25D366"
+                    />
+                )}
+            />
+
+            <List.Item
+                title="Media visibility"
+                description="Show newly downloaded media in your device's gallery"
+                left={() => <List.Icon icon="eye" color="#25D366" />}
+                right={() => (
+                    <RadioButton.Android
+                        value="media"
+                        status={mediaVisibility ? 'checked' : 'unchecked'}
+                        onPress={() => setMediaVisibility(!mediaVisibility)}
+                        color="#25D366"
+                    />
+                )}
+            />
+
+            <List.Item
+                title="Font size"
+                description={fontSize.charAt(0).toUpperCase() + fontSize.slice(1)}
+                left={() => <List.Icon icon="format-size" color="#25D366" />}
+                onPress={() => navigation.navigate('FontSizeSettings')}
+            />
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>ARCHIVED CHATS</Text>
+            </View>
+
+            <List.Item
+                title="Keep chats archived"
+                description="Archived chats will remain archived when you receive a new message"
+                left={() => <List.Icon icon="archive" color="#25D366" />}
+                right={() => <RadioButton.Android value="keep" status="unchecked" color="#25D366" />}
+            />
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>BACKUP</Text>
+            </View>
+
+            <List.Item
+                title="Chat backup"
+                description="Last backup: Never"
+                left={() => <List.Icon icon="backup-restore" color="#25D366" />}
+                onPress={() => navigation.navigate('BackupSettings')}
+            />
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>CHAT HISTORY</Text>
+            </View>
+
+            <List.Item
+                title="Export chat"
+                description="Export chat history via email"
+                left={() => <List.Icon icon="export" color="#25D366" />}
+                onPress={() => {}}
+            />
+
+            <List.Item
+                title="Clear all chats"
+                description="Delete all messages from all chats"
+                left={() => <List.Icon icon="delete-sweep" color="#F44336" />}
+                onPress={() => {}}
+            />
+
+            <List.Item
+                title="Delete all chats"
+                description="Delete all chats and their message history"
+                left={() => <List.Icon icon="delete-forever" color="#F44336" />}
+                onPress={() => {}}
+            />
+        </ScrollView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    header: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#F7F8FA',
+    },
+    headerText: {
+        fontSize: 13,
+        color: '#667781',
+        fontWeight: '600',
+    },
+    divider: {
+        height: 8,
+        backgroundColor: '#F7F8FA',
+    },
+});

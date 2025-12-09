@@ -1,0 +1,310 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import axios from '../../api/axios';
+
+interface LinkedDevice {
+  _id: string;
+  deviceName: string;
+  deviceType: string;
+  browser?: string;
+  os?: string;
+  lastActive: string;
+  linkedAt: string;
+}
+
+export const LinkedDevicesDetailScreen = () => {
+  const [devices, setDevices] = useState<LinkedDevice[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [unlinking, setUnlinking] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchDevices();
+  }, []);
+
+  const fetchDevices = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('/users/linked-devices');
+      setDevices(response.data);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to load linked devices');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const unlinkDevice = (deviceId: string) => {
+    const device = devices.find((d) => d._id === deviceId);
+    
+    Alert.alert(
+      'Unlink Device',
+      `Unlink ${device?.deviceName}? You'll need to scan the QR code again to use WhatsApp on this device.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Unlink',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setUnlinking(deviceId);
+              
+              await axios.delete(`/users/linked-devices/${deviceId}`);
+              
+              setDevices(devices.filter((d) => d._id !== deviceId));
+              Alert.alert('Success', 'Device unlinked');
+            } catch (error) {
+              Alert.alert('Error', 'Failed to unlink device');
+            } finally {
+              setUnlinking(null);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const formatLastActive = (timestamp: string): string => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    return date.toLocaleDateString();
+  };
+
+  const getDeviceIcon = (deviceType: string): string => {
+    switch (deviceType.toLowerCase()) {
+      case 'desktop':
+        return '💻';
+      case 'tablet':
+        return '📱';
+      case 'mobile':
+        return '📱';
+      default:
+        return '🖥️';
+    }
+  };
+
+  const renderDevice = ({ item }: { item: LinkedDevice }) => (
+    <View style={styles.deviceItem}>
+      <View style={styles.deviceLeft}>
+        <Text style={styles.deviceIcon}>{getDeviceIcon(item.deviceType)}</Text>
+        <View style={styles.deviceInfo}>
+          <Text style={styles.deviceName}>{item.deviceName}</Text>
+          <Text style={styles.deviceDetails}>
+            {item.browser && `${item.browser} • `}
+            {item.os}
+          </Text>
+          <View style={styles.deviceMeta}>
+            <Text style={styles.lastActive}>
+              Last active: {formatLastActive(item.lastActive)}
+            </Text>
+            <Text style={styles.linkedDate}>
+              Linked: {new Date(item.linkedAt).toLocaleDateString()}
+            </Text>
+          </View>
+        </View>
+      </View>
+      <TouchableOpacity
+        style={[styles.unlinkButton, unlinking === item._id && styles.buttonDisabled]}
+        onPress={() => unlinkDevice(item._id)}
+        disabled={unlinking === item._id}
+      >
+        {unlinking === item._id ? (
+          <ActivityIndicator color="#dc3545" size="small" />
+        ) : (
+          <Text style={styles.unlinkButtonText}>Unlink</Text>
+        )}
+      </TouchableOpacity>
+    </View>
+  );
+
+  if (loading && devices.length === 0) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#25D366" />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerIcon}>🔗</Text>
+        <Text style={styles.headerText}>Linked Devices</Text>
+        <Text style={styles.headerSubText}>
+          {devices.length} {devices.length === 1 ? 'device' : 'devices'} linked
+        </Text>
+      </View>
+
+      {devices.length > 0 ? (
+        <FlatList
+          data={devices}
+          keyExtractor={(item) => item._id}
+          renderItem={renderDevice}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          contentContainerStyle={styles.listContent}
+        />
+      ) : (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyIcon}>📱</Text>
+          <Text style={styles.emptyTitle}>No Linked Devices</Text>
+          <Text style={styles.emptyDescription}>
+            Link a device to use WhatsApp on multiple platforms
+          </Text>
+        </View>
+      )}
+
+      <View style={styles.infoBox}>
+        <Text style={styles.infoTitle}>ℹ️ About Linked Devices</Text>
+        <Text style={styles.infoText}>
+          • Use WhatsApp on up to 4 devices{'\n'}
+          • Messages are end-to-end encrypted{'\n'}
+          • Devices can work without phone connection{'\n'}
+          • Unlink devices you no longer use{'\n'}
+          • Review active sessions regularly
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  header: {
+    padding: 24,
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  headerIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  headerSubText: {
+    fontSize: 14,
+    color: '#666',
+  },
+  listContent: {
+    paddingVertical: 8,
+  },
+  deviceItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  deviceLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  deviceIcon: {
+    fontSize: 32,
+    marginRight: 12,
+  },
+  deviceInfo: {
+    flex: 1,
+  },
+  deviceName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  deviceDetails: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  deviceMeta: {
+    marginTop: 4,
+  },
+  lastActive: {
+    fontSize: 12,
+    color: '#999',
+  },
+  linkedDate: {
+    fontSize: 12,
+    color: '#999',
+  },
+  unlinkButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#ffebee',
+    borderWidth: 1,
+    borderColor: '#dc3545',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  unlinkButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#dc3545',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#f0f0f0',
+    marginLeft: 60,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 48,
+  },
+  emptyIcon: {
+    fontSize: 64,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
+  emptyDescription: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+  },
+  infoBox: {
+    margin: 16,
+    padding: 16,
+    backgroundColor: '#e3f2fd',
+    borderRadius: 8,
+  },
+  infoTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0d47a1',
+    marginBottom: 8,
+  },
+  infoText: {
+    fontSize: 14,
+    color: '#0d47a1',
+    lineHeight: 22,
+  },
+});

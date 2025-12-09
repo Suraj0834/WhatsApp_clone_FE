@@ -1,0 +1,191 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, Text, TextInput, Alert } from 'react-native';
+import { List, Button, IconButton, Divider } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+
+export const SecuritySettingsScreen = () => {
+    const navigation = useNavigation<any>();
+    const [twoStepEnabled, setTwoStepEnabled] = useState(false);
+
+    const handleTwoStepVerification = () => {
+        navigation.navigate('TwoStepVerification');
+    };
+
+    const handleChangeNumber = () => {
+        Alert.alert(
+            'Change Number',
+            'Changing your phone number will migrate your account info, groups & settings.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Continue', onPress: () => {} },
+            ]
+        );
+    };
+
+    const handleRequestAccountInfo = () => {
+        Alert.alert(
+            'Request Account Info',
+            'Create a report of your WhatsApp account information and settings, which you can access or port to another app.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Request Report', onPress: () => {} },
+            ]
+        );
+    };
+
+    const handleDeleteAccount = () => {
+        Alert.alert(
+            'Delete My Account',
+            'This will delete your account and erase your message history. This action cannot be undone.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: () => {},
+                },
+            ]
+        );
+    };
+
+    return (
+        <ScrollView style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.headerText}>SECURITY</Text>
+            </View>
+
+            <List.Item
+                title="App Lock"
+                description="Secure WhatsApp with PIN or biometric"
+                left={() => <List.Icon icon="lock" color="#25D366" />}
+                right={() => <IconButton icon="chevron-right" size={20} />}
+                onPress={() => navigation.navigate('AppLock')}
+            />
+
+            <List.Item
+                title="Fingerprint Authentication"
+                description="Use fingerprint to unlock app"
+                left={() => <List.Icon icon="fingerprint" color="#25D366" />}
+                right={() => <IconButton icon="chevron-right" size={20} />}
+                onPress={() => navigation.navigate('FingerprintAuth')}
+            />
+
+            <List.Item
+                title="Face ID Authentication"
+                description="Use Face ID to unlock app"
+                left={() => <List.Icon icon="face-recognition" color="#25D366" />}
+                right={() => <IconButton icon="chevron-right" size={20} />}
+                onPress={() => navigation.navigate('FaceIDAuth')}
+            />
+
+            <List.Item
+                title="Security Notifications"
+                description="Get notified when security code changes"
+                left={() => <List.Icon icon="bell-alert" color="#25D366" />}
+                right={() => <IconButton icon="chevron-right" size={20} />}
+                onPress={() => navigation.navigate('SecurityNotifications')}
+            />
+
+            <List.Item
+                title="Encryption Info"
+                description="View encryption details"
+                left={() => <List.Icon icon="shield-lock" color="#25D366" />}
+                right={() => <IconButton icon="chevron-right" size={20} />}
+                onPress={() => navigation.navigate('EncryptionInfo')}
+            />
+
+            <List.Item
+                title="Two-step verification"
+                description={twoStepEnabled ? 'Enabled' : 'Add extra security'}
+                left={() => <List.Icon icon="shield-check" color="#25D366" />}
+                right={() => <IconButton icon="chevron-right" size={20} />}
+                onPress={handleTwoStepVerification}
+            />
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>ACCOUNT</Text>
+            </View>
+
+            <List.Item
+                title="Change number"
+                description="Change your phone number"
+                left={() => <List.Icon icon="phone-sync" color="#25D366" />}
+                right={() => <IconButton icon="chevron-right" size={20} />}
+                onPress={handleChangeNumber}
+            />
+
+            <List.Item
+                title="Request account info"
+                description="Request a report of your account info"
+                left={() => <List.Icon icon="file-document" color="#25D366" />}
+                right={() => <IconButton icon="chevron-right" size={20} />}
+                onPress={handleRequestAccountInfo}
+            />
+
+            <List.Item
+                title="Delete my account"
+                description="Delete your account and message history"
+                left={() => <List.Icon icon="delete-forever" color="#F44336" />}
+                right={() => <IconButton icon="chevron-right" size={20} />}
+                onPress={handleDeleteAccount}
+            />
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.infoBox}>
+                <Text style={styles.infoTitle}>End-to-end encryption</Text>
+                <Text style={styles.infoText}>
+                    Messages and calls are secured with end-to-end encryption. Tap to learn more.
+                </Text>
+            </View>
+
+            <View style={styles.infoBox}>
+                <Text style={styles.infoTitle}>Security code verification</Text>
+                <Text style={styles.infoText}>
+                    You can verify that calls and messages to a contact are end-to-end encrypted. Their security code is available in their contact info screen.
+                </Text>
+            </View>
+        </ScrollView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    header: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#F7F8FA',
+    },
+    headerText: {
+        fontSize: 13,
+        color: '#667781',
+        fontWeight: '600',
+    },
+    divider: {
+        height: 8,
+        backgroundColor: '#F7F8FA',
+    },
+    infoBox: {
+        margin: 16,
+        padding: 16,
+        backgroundColor: '#F7F8FA',
+        borderRadius: 8,
+        marginBottom: 12,
+    },
+    infoTitle: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#000',
+        marginBottom: 8,
+    },
+    infoText: {
+        fontSize: 13,
+        color: '#667781',
+        lineHeight: 18,
+    },
+});

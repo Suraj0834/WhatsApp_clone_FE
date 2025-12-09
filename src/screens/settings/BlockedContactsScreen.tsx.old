@@ -1,0 +1,228 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Alert, Image } from 'react-native';
+import { List, Switch, Button, Divider, TextInput } from 'react-native-paper';
+
+interface BlockedContact {
+    id: string;
+    name: string;
+    phoneNumber: string;
+    avatar?: string;
+}
+
+export const BlockedContactsScreen = () => {
+    const [blockedContacts, setBlockedContacts] = useState<BlockedContact[]>([
+        { id: '1', name: 'John Doe', phoneNumber: '+1 234 567 8900' },
+        { id: '2', name: 'Jane Smith', phoneNumber: '+1 234 567 8901' },
+        { id: '3', name: 'Mike Johnson', phoneNumber: '+1 234 567 8902' },
+    ]);
+
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleUnblock = (contact: BlockedContact) => {
+        Alert.alert(
+            'Unblock contact',
+            `Are you sure you want to unblock ${contact.name}?`,
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Unblock',
+                    style: 'destructive',
+                    onPress: () => {
+                        setBlockedContacts(prev => prev.filter(c => c.id !== contact.id));
+                        Alert.alert('Success', `${contact.name} has been unblocked`);
+                    }
+                }
+            ]
+        );
+    };
+
+    const filteredContacts = blockedContacts.filter(contact =>
+        contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        contact.phoneNumber.includes(searchQuery)
+    );
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.infoBox}>
+                <Text style={styles.infoText}>
+                    Blocked contacts will no longer be able to call you or send you messages
+                </Text>
+            </View>
+
+            <View style={styles.searchContainer}>
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search blocked contacts..."
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    mode="outlined"
+                    outlineColor="#E8E8E8"
+                    activeOutlineColor="#25D366"
+                    left={<TextInput.Icon icon="magnify" />}
+                />
+            </View>
+
+            <ScrollView style={styles.listContainer}>
+                {filteredContacts.length === 0 ? (
+                    <View style={styles.emptyState}>
+                        <Text style={styles.emptyStateIcon}>🚫</Text>
+                        <Text style={styles.emptyStateTitle}>No blocked contacts</Text>
+                        <Text style={styles.emptyStateText}>
+                            {searchQuery ? 'No contacts match your search' : 'You haven\'t blocked anyone yet'}
+                        </Text>
+                    </View>
+                ) : (
+                    filteredContacts.map(contact => (
+                        <View key={contact.id} style={styles.contactItem}>
+                            <View style={styles.avatarContainer}>
+                                {contact.avatar ? (
+                                    <Image source={{ uri: contact.avatar }} style={styles.avatar} />
+                                ) : (
+                                    <View style={styles.avatarPlaceholder}>
+                                        <Text style={styles.avatarText}>
+                                            {contact.name.charAt(0).toUpperCase()}
+                                        </Text>
+                                    </View>
+                                )}
+                            </View>
+                            <View style={styles.contactInfo}>
+                                <Text style={styles.contactName}>{contact.name}</Text>
+                                <Text style={styles.contactPhone}>{contact.phoneNumber}</Text>
+                            </View>
+                            <Button
+                                mode="outlined"
+                                onPress={() => handleUnblock(contact)}
+                                style={styles.unblockButton}
+                                labelStyle={styles.unblockButtonText}
+                                compact
+                            >
+                                Unblock
+                            </Button>
+                        </View>
+                    ))
+                )}
+            </ScrollView>
+
+            <Divider />
+
+            <View style={styles.footer}>
+                <Button
+                    mode="text"
+                    onPress={() => Alert.alert('Info', 'You can block contacts from their chat or contact info')}
+                    labelStyle={styles.footerButtonText}
+                >
+                    How to block a contact
+                </Button>
+            </View>
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    infoBox: {
+        margin: 16,
+        padding: 16,
+        backgroundColor: '#FFF9E6',
+        borderRadius: 8,
+        borderLeftWidth: 4,
+        borderLeftColor: '#FFA500',
+    },
+    infoText: {
+        fontSize: 13,
+        color: '#667781',
+        lineHeight: 18,
+    },
+    searchContainer: {
+        paddingHorizontal: 16,
+        marginBottom: 8,
+    },
+    searchInput: {
+        backgroundColor: '#fff',
+    },
+    listContainer: {
+        flex: 1,
+    },
+    contactItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
+    },
+    avatarContainer: {
+        marginRight: 12,
+    },
+    avatar: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+    },
+    avatarPlaceholder: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#25D366',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    avatarText: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#fff',
+    },
+    contactInfo: {
+        flex: 1,
+    },
+    contactName: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: '#000',
+        marginBottom: 4,
+    },
+    contactPhone: {
+        fontSize: 13,
+        color: '#667781',
+    },
+    unblockButton: {
+        borderColor: '#25D366',
+    },
+    unblockButtonText: {
+        color: '#25D366',
+        fontSize: 12,
+    },
+    emptyState: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 60,
+        paddingHorizontal: 32,
+    },
+    emptyStateIcon: {
+        fontSize: 64,
+        marginBottom: 16,
+    },
+    emptyStateTitle: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#000',
+        marginBottom: 8,
+    },
+    emptyStateText: {
+        fontSize: 14,
+        color: '#667781',
+        textAlign: 'center',
+        lineHeight: 20,
+    },
+    footer: {
+        padding: 8,
+        alignItems: 'center',
+    },
+    footerButtonText: {
+        color: '#25D366',
+        fontSize: 14,
+    },
+});

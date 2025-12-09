@@ -1,0 +1,282 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, Text, TextInput, TouchableOpacity, Alert, Linking } from 'react-native';
+import { List, Button, Divider, Chip, IconButton } from 'react-native-paper';
+
+export const HelpSupportScreen = () => {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+    const categories = ['Account', 'Chats', 'Security', 'Privacy', 'Calls', 'Groups'];
+
+    const faqItems = [
+        {
+            category: 'Account',
+            question: 'How do I change my phone number?',
+            answer: 'Go to Settings > Account > Change number',
+        },
+        {
+            category: 'Account',
+            question: 'How do I delete my account?',
+            answer: 'Go to Settings > Account > Delete my account',
+        },
+        {
+            category: 'Security',
+            question: 'How do I enable two-step verification?',
+            answer: 'Go to Settings > Account > Two-step verification',
+        },
+        {
+            category: 'Privacy',
+            question: 'Who can see my last seen?',
+            answer: 'Go to Settings > Privacy > Last seen',
+        },
+        {
+            category: 'Chats',
+            question: 'How do I backup my chats?',
+            answer: 'Go to Settings > Chats > Chat backup',
+        },
+        {
+            category: 'Groups',
+            question: 'How many people can I add to a group?',
+            answer: 'You can add up to 1024 participants',
+        },
+    ];
+
+    const filteredFaqs = faqItems.filter(item => {
+        const matchesCategory = !selectedCategory || item.category === selectedCategory;
+        const matchesSearch = !searchQuery || 
+            item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.answer.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
+
+    const openURL = (url: string) => {
+        Linking.openURL(url).catch(() => Alert.alert('Error', 'Unable to open link'));
+    };
+
+    return (
+        <ScrollView style={styles.container}>
+            <View style={styles.searchContainer}>
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="🔍 Search for help..."
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    placeholderTextColor="#667781"
+                />
+            </View>
+
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.categoriesContainer}
+                contentContainerStyle={styles.categoriesContent}
+            >
+                {categories.map(category => (
+                    <Chip
+                        key={category}
+                        selected={selectedCategory === category}
+                        onPress={() => setSelectedCategory(selectedCategory === category ? null : category)}
+                        style={[
+                            styles.categoryChip,
+                            selectedCategory === category && styles.categoryChipSelected
+                        ]}
+                        textStyle={[
+                            styles.categoryChipText,
+                            selectedCategory === category && styles.categoryChipTextSelected
+                        ]}
+                    >
+                        {category}
+                    </Chip>
+                ))}
+            </ScrollView>
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>FAQ</Text>
+            </View>
+
+            {filteredFaqs.map((item, index) => (
+                <List.Accordion
+                    key={index}
+                    title={item.question}
+                    titleStyle={styles.faqQuestion}
+                    style={styles.faqItem}
+                    left={() => <List.Icon icon="help-circle-outline" color="#25D366" />}
+                >
+                    <View style={styles.faqAnswer}>
+                        <Text style={styles.faqAnswerText}>{item.answer}</Text>
+                    </View>
+                </List.Accordion>
+            ))}
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>CONTACT US</Text>
+            </View>
+
+            <List.Item
+                title="Contact us"
+                description="Get help from our support team"
+                left={() => <List.Icon icon="email-outline" color="#25D366" />}
+                onPress={() => openURL('mailto:support@whatsapp.com')}
+            />
+
+            <List.Item
+                title="Help Center"
+                description="Visit our help center for more articles"
+                left={() => <List.Icon icon="web" color="#25D366" />}
+                onPress={() => openURL('https://faq.whatsapp.com')}
+            />
+
+            <List.Item
+                title="Privacy Policy"
+                description="View our privacy policy"
+                left={() => <List.Icon icon="shield-check-outline" color="#25D366" />}
+                onPress={() => openURL('https://www.whatsapp.com/legal/privacy-policy')}
+            />
+
+            <List.Item
+                title="Terms of Service"
+                description="View our terms of service"
+                left={() => <List.Icon icon="file-document-outline" color="#25D366" />}
+                onPress={() => openURL('https://www.whatsapp.com/legal/terms-of-service')}
+            />
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>APP INFO</Text>
+            </View>
+
+            <List.Item
+                title="App version"
+                description="2.23.25.78"
+                left={() => <List.Icon icon="information-outline" color="#25D366" />}
+            />
+
+            <List.Item
+                title="System status"
+                description="All systems operational"
+                left={() => <List.Icon icon="check-circle-outline" color="#25D366" />}
+            />
+
+            <View style={styles.feedbackSection}>
+                <Text style={styles.feedbackTitle}>Send us feedback</Text>
+                <TextInput
+                    style={styles.feedbackInput}
+                    placeholder="Tell us what you think..."
+                    multiline
+                    numberOfLines={4}
+                    textAlignVertical="top"
+                />
+                <Button
+                    mode="contained"
+                    onPress={() => Alert.alert('Thank you!', 'Your feedback has been submitted')}
+                    style={styles.feedbackButton}
+                >
+                    SUBMIT FEEDBACK
+                </Button>
+            </View>
+        </ScrollView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        margin: 16,
+        paddingHorizontal: 12,
+        backgroundColor: '#F7F8FA',
+        borderRadius: 8,
+    },
+    searchIcon: {
+        marginRight: 8,
+    },
+    searchInput: {
+        flex: 1,
+        paddingVertical: 12,
+        fontSize: 16,
+        color: '#000',
+    },
+    categoriesContainer: {
+        marginBottom: 8,
+    },
+    categoriesContent: {
+        paddingHorizontal: 16,
+    },
+    categoryChip: {
+        marginRight: 8,
+        backgroundColor: '#F7F8FA',
+    },
+    categoryChipSelected: {
+        backgroundColor: '#25D366',
+    },
+    categoryChipText: {
+        color: '#667781',
+    },
+    categoryChipTextSelected: {
+        color: '#fff',
+    },
+    header: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#F7F8FA',
+    },
+    headerText: {
+        fontSize: 13,
+        color: '#667781',
+        fontWeight: '600',
+    },
+    faqItem: {
+        backgroundColor: '#fff',
+    },
+    faqQuestion: {
+        fontSize: 15,
+        color: '#000',
+    },
+    faqAnswer: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#F7F8FA',
+    },
+    faqAnswerText: {
+        fontSize: 14,
+        color: '#667781',
+        lineHeight: 20,
+    },
+    divider: {
+        height: 8,
+        backgroundColor: '#F7F8FA',
+    },
+    feedbackSection: {
+        margin: 16,
+        padding: 16,
+        backgroundColor: '#F7F8FA',
+        borderRadius: 12,
+    },
+    feedbackTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#000',
+        marginBottom: 12,
+    },
+    feedbackInput: {
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        padding: 12,
+        fontSize: 14,
+        color: '#000',
+        minHeight: 100,
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: '#E8E8E8',
+    },
+    feedbackButton: {
+        backgroundColor: '#25D366',
+    },
+});

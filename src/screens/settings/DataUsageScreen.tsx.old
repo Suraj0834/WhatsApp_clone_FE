@@ -1,0 +1,235 @@
+import React, { useState } from 'react';
+import {
+    View,
+    StyleSheet,
+    Text,
+    ScrollView,
+    TouchableOpacity,
+} from 'react-native';
+import { List, Switch, Divider } from 'react-native-paper';
+
+export const DataUsageScreen = () => {
+    const [autoDownloadPhotos, setAutoDownloadPhotos] = useState(true);
+    const [autoDownloadAudio, setAutoDownloadAudio] = useState(true);
+    const [autoDownloadVideos, setAutoDownloadVideos] = useState(false);
+    const [autoDownloadDocs, setAutoDownloadDocs] = useState(false);
+    const [lowDataMode, setLowDataMode] = useState(false);
+
+    return (
+        <ScrollView style={styles.container}>
+            <View style={styles.summaryCard}>
+                <View style={styles.summaryRow}>
+                    <View style={styles.summaryItem}>
+                        <Text style={styles.summaryValue}>245 MB</Text>
+                        <Text style={styles.summaryLabel}>Sent</Text>
+                    </View>
+                    <View style={styles.summaryDivider} />
+                    <View style={styles.summaryItem}>
+                        <Text style={styles.summaryValue}>1.2 GB</Text>
+                        <Text style={styles.summaryLabel}>Received</Text>
+                    </View>
+                </View>
+                <TouchableOpacity style={styles.resetButton}>
+                    <Text style={styles.resetButtonText}>Reset Statistics</Text>
+                </TouchableOpacity>
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>MEDIA AUTO-DOWNLOAD</Text>
+                <Text style={styles.headerSubtext}>
+                    Voice messages are always automatically downloaded
+                </Text>
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>When using mobile data</Text>
+                
+                <List.Item
+                    title="Photos"
+                    left={() => <List.Icon icon="image" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={autoDownloadPhotos}
+                            onValueChange={setAutoDownloadPhotos}
+                        />
+                    )}
+                />
+
+                <List.Item
+                    title="Audio"
+                    left={() => <List.Icon icon="music" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={autoDownloadAudio}
+                            onValueChange={setAutoDownloadAudio}
+                        />
+                    )}
+                />
+
+                <List.Item
+                    title="Videos"
+                    left={() => <List.Icon icon="video" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={autoDownloadVideos}
+                            onValueChange={setAutoDownloadVideos}
+                        />
+                    )}
+                />
+
+                <List.Item
+                    title="Documents"
+                    left={() => <List.Icon icon="file-document" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={autoDownloadDocs}
+                            onValueChange={setAutoDownloadDocs}
+                        />
+                    )}
+                />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>When using Wi-Fi</Text>
+                
+                <List.Item
+                    title="Photos"
+                    left={() => <List.Icon icon="image" color="#25D366" />}
+                    right={() => <Switch value={true} onValueChange={() => {}} />}
+                />
+
+                <List.Item
+                    title="Audio"
+                    left={() => <List.Icon icon="music" color="#25D366" />}
+                    right={() => <Switch value={true} onValueChange={() => {}} />}
+                />
+
+                <List.Item
+                    title="Videos"
+                    left={() => <List.Icon icon="video" color="#25D366" />}
+                    right={() => <Switch value={true} onValueChange={() => {}} />}
+                />
+
+                <List.Item
+                    title="Documents"
+                    left={() => <List.Icon icon="file-document" color="#25D366" />}
+                    right={() => <Switch value={true} onValueChange={() => {}} />}
+                />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.section}>
+                <List.Item
+                    title="Low data usage"
+                    description="Reduce data usage during WhatsApp calls"
+                    left={() => <List.Icon icon="signal-cellular-1" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={lowDataMode}
+                            onValueChange={setLowDataMode}
+                        />
+                    )}
+                />
+            </View>
+
+            <View style={styles.infoBox}>
+                <Text style={styles.infoText}>
+                    ℹ️ Media and documents won't be automatically downloaded when roaming
+                </Text>
+            </View>
+        </ScrollView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    summaryCard: {
+        margin: 16,
+        padding: 20,
+        backgroundColor: '#F7F8FA',
+        borderRadius: 12,
+    },
+    summaryRow: {
+        flexDirection: 'row',
+        marginBottom: 16,
+    },
+    summaryItem: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    summaryDivider: {
+        width: 1,
+        backgroundColor: '#E8E8E8',
+        marginHorizontal: 16,
+    },
+    summaryValue: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#000',
+        marginBottom: 4,
+    },
+    summaryLabel: {
+        fontSize: 13,
+        color: '#667781',
+    },
+    resetButton: {
+        paddingVertical: 12,
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 8,
+    },
+    resetButtonText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#25D366',
+    },
+    divider: {
+        height: 8,
+        backgroundColor: '#F7F8FA',
+    },
+    header: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#F7F8FA',
+    },
+    headerText: {
+        fontSize: 13,
+        color: '#667781',
+        fontWeight: '600',
+        marginBottom: 4,
+    },
+    headerSubtext: {
+        fontSize: 12,
+        color: '#667781',
+    },
+    section: {
+        backgroundColor: '#fff',
+        paddingVertical: 8,
+    },
+    sectionTitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#000',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+    },
+    infoBox: {
+        margin: 16,
+        padding: 16,
+        backgroundColor: '#E7F5EC',
+        borderRadius: 8,
+    },
+    infoText: {
+        fontSize: 13,
+        color: '#667781',
+        lineHeight: 18,
+    },
+});

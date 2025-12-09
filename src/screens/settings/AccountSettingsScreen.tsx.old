@@ -1,0 +1,248 @@
+import React, { useState } from 'react';
+import {
+    View,
+    StyleSheet,
+    Text,
+    ScrollView,
+    TouchableOpacity,
+    Alert,
+} from 'react-native';
+import { List, Button, Switch, Divider } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+
+export const AccountSettingsScreen = () => {
+    const navigation = useNavigation<any>();
+    const [readReceipts, setReadReceipts] = useState(true);
+    const [lastSeen, setLastSeen] = useState(true);
+
+    const handleChangeNumber = () => {
+        Alert.alert(
+            'Change number',
+            'Change your WhatsApp number by verifying a new number',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Continue', onPress: () => {} },
+            ]
+        );
+    };
+
+    const handleDeleteAccount = () => {
+        Alert.alert(
+            'Delete my account',
+            'Deleting your account will delete your message history and remove you from all WhatsApp groups. This action cannot be undone.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: () => Alert.alert('Confirm', 'Please type your phone number to confirm'),
+                },
+            ]
+        );
+    };
+
+    return (
+        <ScrollView style={styles.container}>
+            <View style={styles.section}>
+                <List.Item
+                    title="Security notifications"
+                    description="Show security notifications on this device"
+                    left={() => <List.Icon icon="shield-check" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>ACCOUNT</Text>
+            </View>
+
+            <View style={styles.section}>
+                <List.Item
+                    title="Change number"
+                    description="Change your phone number"
+                    left={() => <List.Icon icon="phone-sync" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => navigation.navigate('ChangeNumber')}
+                />
+
+                <List.Item
+                    title="Verify account"
+                    description="Verify your account identity"
+                    left={() => <List.Icon icon="check-decagram" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => navigation.navigate('VerifyAccount')}
+                />
+
+                <List.Item
+                    title="Request account info"
+                    description="Request a report of your account information"
+                    left={() => <List.Icon icon="file-document" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => navigation.navigate('RequestAccountInfo')}
+                />
+
+                <List.Item
+                    title="Account activity"
+                    description="View recent account activity"
+                    left={() => <List.Icon icon="history" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => navigation.navigate('AccountActivity')}
+                />
+
+                <List.Item
+                    title="Linked devices"
+                    description="Manage devices linked to your account"
+                    left={() => <List.Icon icon="devices" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => navigation.navigate('LinkedDevicesDetail')}
+                />
+
+                <List.Item
+                    title="Deactivate account"
+                    description="Temporarily deactivate your account"
+                    left={() => <List.Icon icon="pause-circle" color="#FF9800" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => navigation.navigate('DeactivateAccount')}
+                />
+
+                <List.Item
+                    title="Delete account"
+                    description="Permanently delete your account"
+                    left={() => <List.Icon icon="delete-forever" color="#F44336" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => navigation.navigate('DeleteAccount')}
+                />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>PRIVACY</Text>
+            </View>
+
+            <View style={styles.section}>
+                <List.Item
+                    title="Read receipts"
+                    description="If turned off, you won't send or receive read receipts"
+                    left={() => <List.Icon icon="check-all" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={readReceipts}
+                            onValueChange={setReadReceipts}
+                        />
+                    )}
+                />
+
+                <List.Item
+                    title="Last seen & online"
+                    description="Show when you're online and last seen"
+                    left={() => <List.Icon icon="clock-outline" color="#25D366" />}
+                    right={() => (
+                        <Switch
+                            value={lastSeen}
+                            onValueChange={setLastSeen}
+                        />
+                    )}
+                />
+
+                <List.Item
+                    title="Profile photo"
+                    description="Everyone"
+                    left={() => <List.Icon icon="camera" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                />
+
+                <List.Item
+                    title="About"
+                    description="Everyone"
+                    left={() => <List.Icon icon="information" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                />
+
+                <List.Item
+                    title="Groups"
+                    description="Everyone"
+                    left={() => <List.Icon icon="account-group" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                />
+
+                <List.Item
+                    title="Blocked contacts"
+                    description="0"
+                    left={() => <List.Icon icon="block-helper" color="#25D366" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={() => {}}
+                />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <View style={styles.header}>
+                <Text style={styles.headerText}>DANGER ZONE</Text>
+            </View>
+
+            <View style={styles.section}>
+                <List.Item
+                    title="Delete my account"
+                    titleStyle={styles.dangerText}
+                    description="Permanently delete your account and data"
+                    left={() => <List.Icon icon="delete-forever" color="#F44336" />}
+                    right={() => <List.Icon icon="chevron-right" />}
+                    onPress={handleDeleteAccount}
+                />
+            </View>
+
+            <View style={styles.warningBox}>
+                <Text style={styles.warningText}>
+                    ⚠️ Deleting your account is permanent and cannot be undone
+                </Text>
+            </View>
+        </ScrollView>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    section: {
+        backgroundColor: '#fff',
+    },
+    header: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#F7F8FA',
+    },
+    headerText: {
+        fontSize: 13,
+        color: '#667781',
+        fontWeight: '600',
+    },
+    divider: {
+        height: 8,
+        backgroundColor: '#F7F8FA',
+    },
+    dangerText: {
+        color: '#F44336',
+    },
+    warningBox: {
+        margin: 16,
+        padding: 16,
+        backgroundColor: '#FFEBEE',
+        borderRadius: 8,
+        borderLeftWidth: 4,
+        borderLeftColor: '#F44336',
+    },
+    warningText: {
+        fontSize: 13,
+        color: '#667781',
+        lineHeight: 18,
+    },
+});
